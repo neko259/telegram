@@ -6,6 +6,10 @@ local telegram = {}
 local token = minetest.settings:get("telegram.token")
 local chat_id = minetest.settings:get("telegram.chatid")
 
+if not token then
+    error("Bot token should be specified in the config in order to work.")
+end
+
 local UPDATES_TIMEOUT = 1 -- seconds
 local UPDATES_LIMIT = 10
 
@@ -16,9 +20,9 @@ local ie, req_ie = _G, minetest.request_insecure_environment
 if req_ie then ie = req_ie() end
 
 if not ie then
-        error("The mod requires access to insecure functions in order "..
-                "to work.  Please add the mod to your secure.trusted_mods "..
-                "setting or disable the mod.")
+    error("The mod requires access to insecure functions in order "..
+    "to work. Please add the mod to your secure.trusted_mods "..
+    "setting or disable the mod.")
 end
 
 ie.package.path = ie.package.path
