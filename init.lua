@@ -87,6 +87,13 @@ function telegram.on_text_receive(msg)
         telegram.send_message(msg.chat.id, "Pong!")
     elseif msg.text == "groupid" then
         telegram.send_message(msg.chat.id, "Group id: " .. msg.chat.id)
+    elseif msg.text == "players" then
+        local players = ""
+        for _,player in ipairs(minetest.get_connected_players()) do
+            local name = player:get_player_name()
+            players = players .. player:get_player_name() .. ", "
+        end
+        telegram.send_message(msg.chat.id, "Active players: " .. players)
     else
         minetest.chat_send_all("<" .. msg.from.first_name .. "@TG> " .. msg.text)
     end
