@@ -16,24 +16,11 @@ local UPDATES_LIMIT = 10
 local offset = 0
 local http_in_progress = false
 
-local ie, req_ie = _G, minetest.request_insecure_environment
-if req_ie then ie = req_ie() end
-
-if not ie then
-    error("The mod requires access to insecure functions in order "..
-    "to work. Please add the mod to your secure.trusted_mods "..
-    "setting or disable the mod.")
-end
-
-ie.package.path = ie.package.path
-    .. ";" .. modpath .. "/?.lua"
-
-
-local JSON = ie.require("JSON")
+local JSON = dofile(modpath .. "/JSON.lua")
 
 http_api = minetest.request_http_api()
 if not http_api then
-    error("HTTP API cannot be enabled.")
+    error("HTTP API cannot be enabled. Add the mods to trusted.")
 end
 
 local function make_request(method, request_body, callback)
