@@ -14,3 +14,8 @@ telegram.register_command("players", function(msg)
     end
     telegram.send_message(msg.chat.id, "Active players: " .. players)
 end)
+
+telegram.register_command("status", function(msg)
+    telegram.send_message(msg.chat.id, minetest.get_server_status(nil, false))
+end)
+
