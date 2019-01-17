@@ -1,7 +1,7 @@
 local current_mod_name = minetest.get_current_modname()
 local modpath = minetest.get_modpath(current_mod_name)
 
-local telegram = {}
+telegram = {}
 
 local token = minetest.settings:get("telegram.token")
 local chat_id = minetest.settings:get("telegram.chatid")
@@ -21,6 +21,12 @@ local JSON = dofile(modpath .. "/JSON.lua")
 http_api = minetest.request_http_api()
 if not http_api then
     error("HTTP API cannot be enabled. Add the mods to trusted.")
+end
+
+local COMMANDS = {}
+
+function telegram.register_command(name, command)
+    COMMANDS[name] = command
 end
 
 local function make_request(method, request_body, callback)
@@ -81,19 +87,9 @@ function telegram.send_message(chat_id, text)
 end
 
 function telegram.on_text_receive(msg)
-    if msg.text == "/start" then
-        telegram.send_message(msg.from.id, "Hello there!\nMy name is " .. bot.first_name)
-    elseif msg.text == "ping" then
-        telegram.send_message(msg.chat.id, "Pong!")
-    elseif msg.text == "groupid" then
-        telegram.send_message(msg.chat.id, "Group id: " .. msg.chat.id)
-    elseif msg.text == "players" then
-        local players = ""
-        for _,player in ipairs(minetest.get_connected_players()) do
-            local name = player:get_player_name()
-            players = players .. player:get_player_name() .. ", "
-        end
-        telegram.send_message(msg.chat.id, "Active players: " .. players)
+    local command = COMMANDS[msg.text]
+    if command then
+        command(msg)
     else
         minetest.chat_send_all("<" .. msg.from.first_name .. "@TG> " .. msg.text)
     end
@@ -127,3 +123,4 @@ if chat_id then
     end)
 end
 
+dofile(modpath .. "/commands.lua")
