@@ -97,7 +97,11 @@ function telegram.on_text_receive(msg)
     if command then
         command(msg)
     else
-        minetest.chat_send_all("<" .. msg.from.first_name .. "@TG> " .. msg.text)
+        local message_text = msg.text
+        if msg.reply_to_message and msg.reply_to_message.text then
+            message_text = ">>" .. msg.reply_to_message.text .. "\n" .. message_text
+        end
+        minetest.chat_send_all("<" .. msg.from.first_name .. "@TG> " .. message_text)
     end
 end
 
