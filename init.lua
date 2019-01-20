@@ -5,12 +5,16 @@ telegram = {}
 
 local token = minetest.settings:get("telegram.token")
 local chat_id = minetest.settings:get("telegram.chatid")
+local updates_timeout = tonumber(minetest.settings:get("telegram.timeout"))
+
+if not updates_timeout then
+    updates_timeout = 1
+end
 
 if not token then
     error("Bot token should be specified in the config in order to work.")
 end
 
-local UPDATES_TIMEOUT = 1 -- seconds
 local UPDATES_LIMIT = 10
 
 local offset = 0
@@ -98,7 +102,7 @@ end
 local timer = 0
 minetest.register_globalstep(function(dtime)
     timer = timer + dtime
-    if timer >= UPDATES_TIMEOUT and not http_in_progress then
+    if timer >= updates_timeout and not http_in_progress then
         local timeout = 0
 
         print(offset)
