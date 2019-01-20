@@ -91,7 +91,9 @@ function telegram.send_message(chat_id, text)
 end
 
 function telegram.on_text_receive(msg)
-    local command = COMMANDS[msg.text]
+    local comm, bot_name = string.match(msg.text, "/(%a+)@(.+)")
+    -- TODO Check the bot name
+    local command = COMMANDS[comm]
     if command then
         command(msg)
     else
