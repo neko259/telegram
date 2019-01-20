@@ -90,10 +90,21 @@ function telegram.send_message(chat_id, text)
     make_request("sendMessage", request_body, nil)
 end
 
+local function get_command(msg)
+    local comm = nil
+    local bot_name = nil
+
+    comm, bot_name = string.match(msg.text, "/(%a+)@(.+)")
+    if not comm then
+        comm = string.match(msg.text, "/(%a+)")
+    end
+
+    -- TODO Check the bot name if using full command
+    return COMMANDS[comm]
+end
+
 function telegram.on_text_receive(msg)
-    local comm, bot_name = string.match(msg.text, "/(%a+)@(.+)")
-    -- TODO Check the bot name
-    local command = COMMANDS[comm]
+    local command = get_command(msg)
     if command then
         command(msg)
     else
