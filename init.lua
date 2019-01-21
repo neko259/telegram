@@ -22,7 +22,7 @@ local http_in_progress = false
 
 local JSON = dofile(modpath .. "/JSON.lua")
 
-http_api = minetest.request_http_api()
+local http_api = minetest.request_http_api()
 if not http_api then
     error("HTTP API cannot be enabled. Add the mods to trusted.")
 end
