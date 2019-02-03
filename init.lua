@@ -58,8 +58,9 @@ local function process_updates(response)
                 for key, update in pairs(updates.result) do
                     if update.message then
                         if update.message.text then
-                            --print(update.message.text)
                             telegram.on_text_receive(update.message)
+                        else
+                            telegram.notify_non_text_receive(update.message)
                         end
                     end
                     -- TODO Other types of messages
@@ -114,6 +115,20 @@ function telegram.on_text_receive(msg)
         end
         minetest.chat_send_all("<" .. msg.from.first_name .. "@TG> " .. message_text)
     end
+end
+
+function telegram.notify_non_text_receive(message)
+    local payload = 'something'
+
+    if message.photo then
+        payload = 'photo'
+    elseif message.voice then
+        payload = 'voice message'
+    elseif message.sticker then
+        payload = 'sticker'
+    end
+
+    minetest.chat_send_all(message.from.first_name .. "@TG sent " .. payload)
 end
 
 local timer = 0
