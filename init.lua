@@ -1,6 +1,10 @@
 local current_mod_name = minetest.get_current_modname()
 local modpath = minetest.get_modpath(current_mod_name)
 
+local ANNOUNCE_NONE = "none"
+local ANNOUNCE_PRIVILEGED = "privileged"
+local ANNOUNCE_ALL = "all"
+
 telegram = {}
 
 local token = minetest.settings:get("telegram.token")
@@ -9,6 +13,11 @@ local updates_timeout = tonumber(minetest.settings:get("telegram.timeout"))
 
 if not updates_timeout then
     updates_timeout = 1
+end
+
+local announce_mode = minetest.settings:get("telegram.announce_mode")
+if not announce_mode then
+    announce_mode = ANNOUNCE_NONE
 end
 
 if not token then
@@ -157,6 +166,22 @@ if chat_id then
         telegram.send_message(chat_id, "<" .. name .. "@MT> " .. message)
         return false
     end)
+
+    if announce_mode ~= ANNOUNCE_NONE then
+        minetest.register_on_joinplayer(function(player)
+            local name = player:get_player_name()
+            if announce_mode == ANNOUNCE_ALL or minetest.check_player_privs(name, "interact") then
+                telegram.send_message(chat_id, name .. " joined the game.")
+            end
+        end)
+
+        minetest.register_on_leaveplayer(function(player, timed_out)
+            local name = player:get_player_name()
+            if announce_mode == ANNOUNCE_ALL or minetest.check_player_privs(name, "interact") then
+                telegram.send_message(chat_id, name .. " left the game.")
+            end
+        end)
+    end
 end
 
 dofile(modpath .. "/commands.lua")
