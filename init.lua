@@ -19,6 +19,7 @@ local announce_mode = minetest.settings:get("telegram.announce_mode")
 if not announce_mode then
     announce_mode = ANNOUNCE_NONE
 end
+local message_color = minetest.settings:get("telegram.message_color") or "#339933"
 
 if not token then
     error("Bot token should be specified in the config in order to work.")
@@ -122,7 +123,7 @@ function telegram.on_text_receive(msg)
         if msg.reply_to_message and msg.reply_to_message.text then
             message_text = ">>" .. msg.reply_to_message.text .. "\n" .. message_text
         end
-        minetest.chat_send_all("<" .. msg.from.first_name .. "@TG> " .. message_text)
+        minetest.chat_send_all(minetest.colorize(message_color, "<" .. msg.from.first_name .. "> " .. message_text))
     end
 end
 
@@ -137,7 +138,7 @@ function telegram.notify_non_text_receive(message)
         payload = 'sticker'
     end
 
-    minetest.chat_send_all(message.from.first_name .. "@TG sent " .. payload)
+    minetest.chat_send_all(minetest.colorize(message_color, message.from.first_name .. " sent " .. payload))
 end
 
 local timer = 0
@@ -163,7 +164,7 @@ end)
 -- Don't send messages from MT to telegram if we don't know where to
 if chat_id then
     minetest.register_on_chat_message(function(name, message)
-        telegram.send_message(chat_id, "<" .. name .. "@MT> " .. message)
+        telegram.send_message(chat_id, "<" .. name .. "> " .. message)
         return false
     end)
 
