@@ -147,7 +147,6 @@ minetest.register_globalstep(function(dtime)
     if timer >= updates_timeout and not http_in_progress then
         local timeout = 0
 
-        print(offset)
         local request_body = {
             offset = offset,
             limit = UPDATES_LIMIT,
